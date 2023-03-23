@@ -5,6 +5,7 @@
 //This example creates a bridge between Serial and Classical Bluetooth (SPP)
 //and also demonstrate that SerialBT have the same functionalities of a normal Serial
 
+
 #include "BluetoothSerial.h"
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -18,13 +19,24 @@ void setup() {
   SerialBT.begin("BUCHUISHERE"); //Bluetooth device name
   Serial.println("The device started, now you can pair it with bluetooth!");
 }
+// IBOX STA
 
+void scheduleRXMessage(String s){
+  if( s.startsWith("sAA=")){
+    SerialBT.println("B0_APPKEY_DEVEUI_TIME");
+    Serial.println("B0_APPKEY_DEVEUI_TIME");
+  }
+
+}
 void loop() {
-  if (Serial.available()) {
+  if (Serial.available()) { 
     SerialBT.write(Serial.read());
   }
   if (SerialBT.available()) {
-    Serial.write(SerialBT.read());
+    String arrivedMessage  = SerialBT.readString();
+    Serial.println(arrivedMessage);
+     scheduleRXMessage(arrivedMessage);
+    
   }
   delay(20);
 }
